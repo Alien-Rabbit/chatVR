@@ -18,7 +18,14 @@
     <script
         src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="/js/spawn-in-circle.component.js"></script>
-
+    <!-- 
+    multicam cdn  -->
+    <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/aframe/cursor.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/src/multi-camera.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/src/viewpoint-selector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/src/mirror.min.js"></script>
 
 </head>
 
@@ -89,6 +96,27 @@
      dressingAmount:20;
      dressingVariance:2,5,3;">
         </a-entity>
+        <!-- multicam tests -->
+        <a-entity id="camera1" secondary-camera="outputElement:#viewport1" position="-8 1.6 0" rotation="0 -90 0">
+        </a-entity>
+        <a-entity id="camera2" secondary-camera="outputElement:#viewport2" position="8 1.6 0" rotation="0 90 0">
+        </a-entity>
+        <a-entity id="camera3" secondary-camera="outputElement:#viewport3" position="0 8 0" rotation="-90 0 0">
+        </a-entity>
+        <a-entity id="camera4" secondary-camera="outputElement:#viewport4" position="-8 1.6 -4" rotation="0 -90 0">
+        </a-entity>
+<!-- multicam viewports test -->
+        <div id="viewport1" style="position:absolute;  border-style: solid; top: 40px; right: 30px; width: 200px; height:200px">
+        </div>
+        <div id="viewport2" style="position:absolute;  border-style: solid; top: 240px; right: 30px; width: 200px; height:200px">
+        </div>
+        <div id="viewport3"style="position:absolute; border-style: solid; top: 440px; right: 30px; width: 200px; height:200px">
+        </div>
+        <div style="position:absolute; text-align: right; top: 540px; right: 30px; width: 400px; height:200px">
+          These cameras are in fixed world positions.
+        </div>
+        <div id="viewport4" style="position:absolute;  border-style: solid; top: 40px; right: 30px; width: 200px; height:200px">
+        </div>
 
     </a-scene>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>-->
@@ -258,7 +286,8 @@
             <h3>Ghertist Radio</h3>
             <p>Currently Playing:</p>
             <p id="currentTrack"></p>
-            <button class="musicBtn" id="backBtn"><</button>
+            <button class="musicBtn" id="backBtn">
+                << /button>
                     <button class="musicBtn" id="playBtn">Play</button>
                     <button class="musicBtn" id="stopBtn">Stop</button>
                     <button class="musicBtn" id="fwrdBtn">></button>
