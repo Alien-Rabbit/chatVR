@@ -1,8 +1,8 @@
 
-![Ghertist 3D Chat Logo](Ghert/images/logo/facebook_cover_photo_2.png)
+![Chat VR Chat Logo](Ghert/images/logo/facebook_cover_photo_2.png)
 
-# Ghertist 3D Chatroom AFrame
- Project to create a 3D chatroom with audio support and generated enviroments - using networked-aframe and aframe-environment-component 
+# Chat3D Chatroom AFrame
+ Project to create a 3D chatroom with audio support and generated enviroments - using networked-aframe and aframe-environment-component with multicam support. Supports up to 6 users per session. v
 
 ### Dependencies 
 - A-Frame

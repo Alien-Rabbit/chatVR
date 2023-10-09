@@ -13,7 +13,7 @@ const port = process.env.PORT || 8080;
 // Setup and configure Express https server.
 const app = express();
 app.use(cors())
-app.use(express.static(path.resolve(__dirname, "..", "Ghert")));
+app.use(express.static(path.resolve(__dirname, "..", "ChatVR")));
 
 // Serve the example and build the bundle in development.
 if (process.env.NODE_ENV === "development") {

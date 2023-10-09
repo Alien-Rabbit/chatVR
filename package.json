@@ -1,12 +1,12 @@
 {
-  "name": "ghertist",
+  "name": "charVR",
   "version": "1.0.0",
-  "description": "My first multi-user virtual reality",
+  "description": "Chat VR application",
   "scripts": {
     "start": "node ./server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Chris Godber",
+  "author": "Chris Godber 2023",
   "dependencies": {
     "aframe-room-component": "^0.3.2",
     "cors": "^2.8.5",

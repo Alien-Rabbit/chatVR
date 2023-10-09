@@ -55,11 +55,55 @@ font-family: "Allerta Stencil", Sans-serif;
     background:lightgrey;
     border: solid 0.5px black ;
     font-size: 1em;
-    margin:1em;
     font-family: "Allerta Stencil", Sans-serif;
 }
 
 #currentTrack{
-    font-size: 1em;
+    font-size: 2em;
     font-family: "Allerta Stencil", Sans-serif;
 }
+
+/* chat box */
+#chatInput {
+    padding:2em;
+    min-width:780px;
+    height: auto;
+    bottom: 260px;
+    left:0;
+    position: fixed;
+    z-index: 10;
+    margin:2em;
+  }
+
+  #chatButton{
+    position: fixed;
+    left:715px;
+    bottom:275px;
+    z-index:10;        
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin:2em;
+  }
+
+  #chatUI {
+    margin:2em;
+    width: 750px;
+    padding:1em;
+    height: 200px;
+    bottom:0;
+    left:0;
+    position: fixed;
+    z-index: 10;
+    background-color: whitesmoke;
+    opacity: 0.9;
+    overflow:scroll;
+    border:black 1px solid;
+  }
+
+
+
