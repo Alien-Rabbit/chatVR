@@ -51,8 +51,8 @@ function defTitle(currentTrack) {
 
     newTitle.appendChild(textNode);
 
-    if (playingUI.classList.contains("TrackTitleP")) {
-        playingUI.parentNode.removeChild(playingUI);
+    if (newTitle.classList.contains("TrackTitleP")) {
+        newTitle.parentNode.removeChild(playingUI);
     }
 
     return playingUI.appendChild(textNode);
