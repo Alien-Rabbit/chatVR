@@ -3,6 +3,7 @@
   <meta charset="utf-8">
   <title>Ghertist 3D Chatroom  Chatroom2</title>
   <meta name="description" content="Citadel Virtual 3D Chatroom">
+  <link rel="stylesheet" href="css/custumUI.css">
   <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
   <script src="/build.js"></script>
@@ -16,6 +17,23 @@
   <script src="/js/spawn-in-circle.component.js"></script>
 </head>
 <body>
+
+  <button id="color-changer" style="z-index: 100; bottom: 400px; left: 30px; position: fixed" onclick="let newColor = window.ntExample.randomColor();
+  document.getElementById('player').setAttribute('player-info', 'color', newColor); 
+  document.querySelector('#button').style.backgroundColor = newColor;
+  document.querySelector('#button').style.color = newColor;">Change Colour</button>
+<input id="username-overlay" style="z-index: 100;  bottom: 400px; left: 60px; position: fixed"
+oninput="document.getElementById('player').setAttribute('player-info', 'name', this.value)" />
+<div id="chatSubmit">
+<input type="text" id="chatInput">
+<button id="chatButton">SEND</button>
+</div>
+<!-- chat Window UI -->
+<div id="chatUI">
+<h4>Chat</h4>
+<div id="messages"></div>
+</div>
+
 <a-scene networked-scene="
       room: Mars;
       debug: true;
@@ -129,12 +147,12 @@
   }
 
   function onSceneLoad() {
-    //WIP Username nametag FUNC
-    // var username = 'user-' + makeId(5).toLowerCase();
-    // username = prompt('Choose a username', username);
-    // var player = document.getElementById('player');
-    // var myNametag = player.querySelector('.nametag');
-    // myNametag.setAttribute('text', 'value', username);
+    // WIP Username nametag FUNC
+    var username = 'user-' + makeId(5).toLowerCase();
+    username = prompt('Choose a username', username);
+    var player = document.getElementById('player');
+    var myNametag = player.querySelector('.nametag');
+    myNametag.setAttribute('text', 'value', username);
 
     document.querySelector('a-scene').components['networked-scene'].connect();
   }
@@ -142,10 +160,8 @@
   function makeId(length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
     for (var i = 0; i < length; i++)
       text += possible.charAt(Math.floor(Math.random() * possible.length));
-
     return text;
   }
 
@@ -156,6 +172,35 @@
     console.log("Occupants",  countOccupants);
     alert ("There are "+countOccupants+" Ghertists Here");
   }
+
+  const btn = document.querySelector("#chatButton");      // SEND btn
+        const input = document.querySelector("#chatInput");     // input field with the text
+        const log = document.querySelector("#messages")    // message logchatInput
+        
+  // chat box 
+  function addMsg() {
+            // log your own messages
+            messages.innerHTML += NAF.clientId + ": " + input.value + '<br>'
+            // broadcast the text as some unique dataType (like "chat")
+            NAF.connection.broadcastData("chat", { txt: input.value })
+            // when a "chat" type message arrives
+            NAF.connection.subscribeToDataChannel("chat", (senderId, dataType, data, targetId) => {
+                // append the data.txt to the message log
+                messages.innerHTML += senderId + ": " + data.txt + '<br>'
+            })
+            txt: input.value = '';
+            messages.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addMsg();
+            }
+        });
+        // when you want to send a message
+        btn.addEventListener("click", evt => {
+            addMsg();
+        });
 
 
 </script>
