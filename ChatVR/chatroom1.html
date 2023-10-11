@@ -6,7 +6,7 @@
     <meta name="description" content="Room 1 Virtual 3D Chatroom">
     <link rel="stylesheet" href="css/custumUI.css">
     <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script> -->
     <script src="/build.js"></script>
     <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
     <script src="https://unpkg.com/naf-uws-adapter/dist/naf-uws-adapter.min.js"></script>
@@ -25,6 +25,7 @@
         src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/src/viewpoint-selector.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/aframe-multi-camera@latest/src/mirror.min.js"></script>
     <script src="js/multicam.component.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -32,8 +33,7 @@
     <button id="color-changer" style="z-index: 100; bottom: 400px; left: 30px; position: fixed" onclick="let newColor = window.ntExample.randomColor();
            document.getElementById('player').setAttribute('player-info', 'color', newColor); 
            document.querySelector('#button').style.backgroundColor = newColor;
-           document.querySelector('#button').style.color = newColor;
-  ">Change Colour</button>
+           document.querySelector('#button').style.color = newColor;">Change Colour</button>
     <input id="username-overlay" style="z-index: 100;  bottom: 400px; left: 60px; position: fixed"
         oninput="document.getElementById('player').setAttribute('player-info', 'name', this.value)" />
     <div id="chatSubmit">
@@ -46,12 +46,18 @@
         <div id="messages"></div>
     </div>
           <!-- serverURL: https://ghertist-3d-chatroom.herokuapp.com/; -->
-    <a-scene networked-scene="
-      room: Chatroom1;
-      debug: true;
-      adapter: webrtc;
-      audio: true;
-      connectOnLoad:true;">
+          <!-- adapter: webrtc;
+          audio: true; -->
+    <a-scene networked-scene=
+    "serverURL: /;
+    app: chat3D;
+    room: chatroom1;
+    connectOnLoad: true;
+    onConnect: onConnect;
+    adapter: wseasyrtc;
+    audio: false;
+    video: false;
+    debug: false;">
         <a-assets>
             <!-- Templates -->
             <!-- Avatar -->
@@ -87,11 +93,12 @@
         <a-entity id="camera3" secondary-camera="outputElement:#viewport3" position="0 8 0" rotation="-90 0 0"></a-entity>
         <a-entity id="camera4" secondary-camera="outputElement:#viewport4" position="-8 1.6 -4" rotation="0 -90 0"></a-entity>
         <!-- multicam viewports test -->
-        <div id="viewport1" style="position:absolute;  border-style: solid; top: 40px; right: 30px; width: 200px; height:200px"></div>
-        <div id="viewport2" style="position:absolute;  border-style: solid; top: 240px; right: 30px; width: 200px; height:200px"></div>
-        <div id="viewport3" style="position:absolute; border-style: solid; top: 440px; right: 30px; width: 200px; height:200px"></div>
+        <div id="viewport1" style="position:absolute;  border-style: solid; top: 40px; right: 30px; width: 100px; height:100px"></div>
+        <div id="viewport2" style="position:absolute;  border-style: solid; top: 240px; right: 30px; width: 100px; height:100px"></div>
+        <div id="viewport3" style="position:absolute; border-style: solid; top: 440px; right: 30px; width: 100px; height:100px"></div>
         <div style="position:absolute; text-align: right; top: 540px; right: 30px; width: 400px; height:200px">These cameras are in fixed world positions.</div>
-        <div id="viewport4"style="position:absolute;  border-style: solid; top: 80x; right: 250px; width: 200px; height:200px"></div>
+        <div id="viewport4"style="position:absolute;  border-style: solid; top: 80x; right: 250px; width: 100px; height:100px"></div>
+        
     </a-scene>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>-->
     <script type="module">
@@ -182,7 +189,7 @@
             var player = document.getElementById('player');
             var myNametag = player.querySelector('.nametag');
             myNametag.setAttribute('text', 'value', username);
-            document.querySelector('a-scene').components['networked-scene'].connect();
+            // document.querySelector('a-scene').components['networked-scene'].connect();
         }
         function makeId(length) {
             var text = "";
@@ -242,10 +249,10 @@
             <h3>Radio</h3>
             <p>Currently Playing:</p>
             <p id="currentTrack"></p>
-                <button class="musicBtn" id="backBtn"><</button>
+                <button class="musicBtn" id="backBtn">Back</button>
                 <button class="musicBtn" id="playBtn">Play</button>
                 <button class="musicBtn" id="stopBtn">Stop</button>
-                <button class="musicBtn" id="fwrdBtn">></button>
+                <button class="musicBtn" id="fwrdBtn">Foward</button>
                 <p id="playerCount">Number of Players:</p>
         </div>
     </div>

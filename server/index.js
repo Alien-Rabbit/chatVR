@@ -1,7 +1,7 @@
 // Load required modules
 const http = require("http"); // http server core module
 const path = require("path");
-var cors = require('cors')
+var cors = require('cors');
 const express = require("express"); // web framework external module
 
 // Set process name
@@ -14,6 +14,15 @@ const port = process.env.PORT || 8080;
 const app = express();
 app.use(cors())
 app.use(express.static(path.resolve(__dirname, "..", "ChatVR")));
+
+const webServer = http.createServer(app);
+// const io = require("socket.io")({
+//   allowEIO3: true // false by default
+// },(webServer));
+
+const io = require("socket.io")(webServer, {
+  allowEIO3: true // false by default
+});
 
 // Serve the example and build the bundle in development.
 if (process.env.NODE_ENV === "development") {
@@ -29,9 +38,22 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Start Express https server
+// const io = require("socket.io")(webServer);
+// import { io } from "socket.io";
+// const io = require('socket.io')(webServer, {
+//   cors: {
+//       origin: "http://localhost:"+port,
+//       methods: ["GET", "POST"],
+//       transports: ['websocket', 'polling'],
+//       credentials: true
+//   },
+//   allowEIO3: true
+// });
 
-const webServer = http.createServer(app);
-const io = require("socket.io")(webServer);
+io.engine.on("connection_error", (err) => {
+  console.log(err);
+});
+
 const rooms = {};
 
 io.on("connection", socket => {
