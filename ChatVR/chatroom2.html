@@ -63,7 +63,7 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
 </a-assets>
   <!--    lighting -->
   <a-entity light="color: #ccccff; intensity: 0.5; type: ambient;" visible=""></a-entity>
-  <a-entity id="rig" movement-controls="fly:true;" spawn-in-circle="radius:3" networked="template:#rig-template;">
+  <a-entity id="rig" wasd-controls look-controls movement-controls="fly:true;" spawn-in-circle="radius:3" networked="template:#rig-template;">
     <!-- Here we add the camera. Adding the camera within a 'rig' is standard practice.
      We set the camera to head height for e.g. computer users, but otherwise never touch it again; if the user enters VR,
      its rotation and position will be updated by the headset in VR. If we need to touch the user's position
