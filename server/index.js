@@ -3,52 +3,30 @@ const http = require("http"); // http server core module
 const path = require("path");
 var cors = require('cors');
 const express = require("express"); // web framework external module
-
 // Set process name
 process.title = "networked-aframe-server";
-
 // Get port or default to 8080
 const port = process.env.PORT || 8080;
-
 // Setup and configure Express https server.
 const app = express();
 app.use(cors())
 app.use(express.static(path.resolve(__dirname, "..", "ChatVR")));
-
 const webServer = http.createServer(app);
-// const io = require("socket.io")({
-//   allowEIO3: true // false by default
-// },(webServer));
-
+// needed to add allowEI03 flag otherwise get a protocol error
 const io = require("socket.io")(webServer, {
   allowEIO3: true // false by default
 });
-
 // Serve the example and build the bundle in development.
 if (process.env.NODE_ENV === "development") {
   const webpackMiddleware = require("webpack-dev-middleware");
   const webpack = require("webpack");
   const config = require("../webpack.dev");
-
   app.use(
     webpackMiddleware(webpack(config), {
       publicPath: "/dist/"
     })
   );
 }
-
-// Start Express https server
-// const io = require("socket.io")(webServer);
-// import { io } from "socket.io";
-// const io = require('socket.io')(webServer, {
-//   cors: {
-//       origin: "http://localhost:"+port,
-//       methods: ["GET", "POST"],
-//       transports: ['websocket', 'polling'],
-//       credentials: true
-//   },
-//   allowEIO3: true
-// });
 
 io.engine.on("connection_error", (err) => {
   console.log(err);
@@ -62,7 +40,6 @@ io.on("connection", socket => {
 
   socket.on("joinRoom", data => {
     const { room } = data;
-
     if (!rooms[room]) {
       rooms[room] = {
         name: room,

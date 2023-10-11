@@ -54,7 +54,7 @@
     room: chatroom1;
     connectOnLoad: true;
     onConnect: onConnect;
-    adapter: wseasyrtc;
+    adapter: webrtc;
     audio: false;
     video: false;
     debug: false;">
@@ -189,7 +189,7 @@
             var player = document.getElementById('player');
             var myNametag = player.querySelector('.nametag');
             myNametag.setAttribute('text', 'value', username);
-            // document.querySelector('a-scene').components['networked-scene'].connect();
+            document.querySelector('a-scene').components['networked-scene'].connect();
         }
         function makeId(length) {
             var text = "";
