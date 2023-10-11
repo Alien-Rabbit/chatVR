@@ -7,21 +7,17 @@
   <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
   <script src="/build.js"></script>
-
   <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
   <script src="https://unpkg.com/naf-uws-adapter/dist/naf-uws-adapter.min.js"></script>
   <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
   <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
   <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
-
+  <script src="js/multicam.component.js"></script>
   <script src="/js/spawn-in-circle.component.js"></script>
 </head>
 <body>
 
-  <button id="color-changer" style="z-index: 100; bottom: 400px; left: 30px; position: fixed" onclick="let newColor = window.ntExample.randomColor();
-  document.getElementById('player').setAttribute('player-info', 'color', newColor); 
-  document.querySelector('#button').style.backgroundColor = newColor;
-  document.querySelector('#button').style.color = newColor;">Change Colour</button>
+  <button id="color-changer" style="z-index: 100; bottom: 400px; left: 30px; position: fixed">Change Colour</button>
 <input id="username-overlay" style="z-index: 100;  bottom: 400px; left: 60px; position: fixed"
 oninput="document.getElementById('player').setAttribute('player-info', 'name', this.value)" />
 <div id="chatSubmit">
@@ -40,83 +36,52 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
       adapter: webrtc;
       audio: true;
       connectOnLoad: false;
-      serverURL: /;
 ">
-
-  <a-assets>
-    <!-- Templates -->
-    <!-- Avatar -->
-    <template id="avatar-template">
-      <a-entity>
-        <a-entity class="nametag" text="value: User; align:center;" position="0 0.7 0" rotation="0 180 0" scale="8 8 8"></a-entity>
-        <a-entity class="avatar" networked-audio-source>
-
-          <a-sphere class="head"
-                    random-color
-                    scale="0.45 0.5 0.4"
-          ></a-sphere>
-          <a-entity class="face"
-                    position="0 0.05 0"
-          >
-            <a-sphere class="eye"
-                      random-color
-                      position="0.16 0.1 -0.25"
-                      scale="0.12 0.12 0.12"
-            >
-              <a-sphere class="pupil"
-                        color="#efefef"
-                        position="0 0 -1"
-                        scale="0.2 0.2 0.2"
-              ></a-sphere>
-            </a-sphere>
-            <a-sphere class="eye"
-
-                      random-color
-                      position="-0.16 0.1 -0.25"
-                      scale="0.12 0.12 0.12"
-            >
-              <a-sphere class="pupil"
-                        random-color
-                        position="0 0 -1"
-                        scale="0.2 0.2 0.2"
-              ></a-sphere>
-            </a-sphere>
-          </a-entity>
-        </a-entity>
+<a-assets>
+  <!-- Templates -->
+  <!-- Camera Rig / Player -->
+  <template id="rig-template">
+    <a-entity></a-entity>
+  </template>
+  <!-- Head / Avatar -->
+  <!--      a few spheres make a head + eyes + pupils    -->
+  <template id="avatar-template">
+    <a-entity class="avatar">
+      <!-- notice this child sphere, with class .head, has the random-color component; this modifies the material component's color property -->
+      <a-sphere class="head" scale="0.2 0.22 0.2" random-color></a-sphere>
+      <a-entity class="face" position="0 0.05 0">
+        <a-sphere class="eye" color="white" position="0.06 0.05 -0.16" scale="0.04 0.04 0.04">
+          <a-sphere class="pupil" color="black" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+        </a-sphere>
+        <a-sphere class="eye" color="white" position="-0.06 0.05 -0.16" scale="0.04 0.04 0.04">
+          <a-sphere class="pupil" color="black" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+        </a-sphere>
       </a-entity>
-    </template>
-
-  </a-assets>
-
-
+    </a-entity>
+  </template>
+  <!-- /Templates -->
+</a-assets>
   <!--    lighting -->
   <a-entity light="color: #ccccff; intensity: 0.5; type: ambient;" visible=""></a-entity>
-
-  <a-entity id="rig">
+  <a-entity id="rig" movement-controls="fly:true;" spawn-in-circle="radius:3" networked="template:#rig-template;">
+    <!-- Here we add the camera. Adding the camera within a 'rig' is standard practice.
+     We set the camera to head height for e.g. computer users, but otherwise never touch it again; if the user enters VR,
+     its rotation and position will be updated by the headset in VR. If we need to touch the user's position
+     or rotation, we always do that by adjusting the rig parent of the active camera. By making that rig--and the
+     active camera appended to it--both networked, we ensure all player movement is kept in sync.
+    -->
     <a-entity
       id="player"
-      networked="template:#avatar-template;attachTemplateToLocal:false;"
       camera
-      position="0 1.6 0"
-      spawn-in-circle="radius:3"
-      wasd-controls
+      position="0 3 0"
       look-controls
+      networked="template:#avatar-template;"
+      visible="false"
     >
-      <a-sphere class="head" visible="false" random-color></a-sphere>
     </a-entity>
   </a-entity>
 
-  <a-entity
-  id="sphere"
-  networked="template:#sphere-template;networkId:sphere;persistent:true;owner:scene"
-></a-entity>
-
-  <!-- <a-entity id="player"
-            visible="false"
-            networked="template:#avatar-template;attachTemplateToLocal:true;"
-            camera spawn-in-circle="radius:3;" position="0 1.3 0" wasd-controls look-controls>
-  </a-entity> -->
-
+  <a-entity id="camera1" secondary-camera="outputElement:#viewport1" position="-8 1.6 0" rotation="0 -90 0">
 
   <a-entity environment="preset: threetowers; groundColor: black;groundYScale:40; seed:35;
     shadow:true;
@@ -132,8 +97,12 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
      dressingAmount:2;
      dressingVariance:1,1,1;">
   </a-entity>
+
 </a-scene>
 
+
+   <!-- multicam viewports test -->
+   <div id="viewport1" style="position:absolute;  border-style: solid; top: 40px; right: 30px; width: 150px; height:150px"></div>
 <!-- javascript -->
 
 <script>
@@ -158,6 +127,38 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
     ]
   });
 
+      // Note the way we're establishing the NAF schema here; this is a bit awkward
+      // because of a recent bug found in the original handling. This mitigates that bug for now,
+      // until a refactor in the future that should fix the issue more cleanly.
+      // see issue https://github.com/networked-aframe/networked-aframe/issues/267
+
+      // This one is necessary, because tracking the .head child component's material's color
+      // won't happen unless we tell NAF to keep it in sync, like here.
+      NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+      NAF.schemas.getComponents = (template) => {
+        if (!NAF.schemas.hasTemplate('#avatar-template')) {
+          NAF.schemas.add({
+            template: '#avatar-template',
+            components: [
+              // position and rotation are added by default if we don't include a template, but since
+              // we also want to sync the color, we need to specify a custom template; if we didn't
+              // include position and rotation in this custom template, they'd not be synced.
+              'position',
+              'rotation',
+
+              // this is how we sync a particular property of a particular component for a particular
+              // child element of template instances.
+              {
+                selector: '.head',
+                component: 'material',
+                property: 'color' // property is optional; if excluded, syncs everything in the component schema
+              }
+            ]
+          });
+        }
+        const components = NAF.schemas.getComponentsOriginal(template);
+        return components;
+      };
 
   var scene = document.querySelector('a-scene');
 
@@ -222,6 +223,12 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
             addMsg();
         });
 
+        function changeColour(){
+        let newColor  = window.ntExample.randomColor();
+        document.getElementById('player').setAttribute('player-info', 'color', newColor); 
+        document.querySelector('#button').style.backgroundColor = newColor;
+        document.querySelector('#button').style.color = newColor;
+      }
 
 </script>
 </body>
