@@ -12,6 +12,7 @@ const app = express();
 app.use(cors())
 app.use(express.static(path.resolve(__dirname, "..", "ChatVR")));
 const webServer = http.createServer(app);
+
 // needed to add allowEI03 flag otherwise get a protocol error
 const io = require("socket.io")(webServer, {
   allowEIO3: true // false by default

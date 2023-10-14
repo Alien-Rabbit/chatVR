@@ -1,0 +1,226 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Nametag Example — Networked-Aframe</title>
+    <meta name="description" content="Tracked Controllers — Networked-Aframe" />
+    <link rel="stylesheet" href="css/custumUI.css">
+    <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <script src="/build.js"></script>
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.controls.min.js"></script>
+    <script src="https://unpkg.com/naf-uws-adapter/dist/naf-uws-adapter.min.js"></script>
+    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="js/multicam.component.js"></script>
+    <script src="/js/spawn-in-circle.component.js"></script>
+
+    <script>
+      // Temporary workaround for template declaration; see issue 
+      NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+      NAF.schemas.getComponents = (template) => {
+        if (!NAF.schemas.hasTemplate('#head-template')) {
+          NAF.schemas.add({
+            template: '#head-template',
+            components: [
+              'position',
+              'rotation',
+
+              // In this example, we don't sync the material.color itself, like the basic example;
+              // we instead sync player-info, which includes color setting + updating.
+              // (you can see an example of the other pattern in the basic.html demo)
+              'player-info'
+            ]
+          });
+        }
+
+        const components = NAF.schemas.getComponentsOriginal(template);
+        return components;
+      };
+    </script>
+
+    <script>
+      window.ntExample = {
+        randomColor: () => {
+          return '#' + new THREE.Color(Math.random(), Math.random(), Math.random()).getHexString();
+        }
+      };
+
+      AFRAME.registerComponent('player-info', {
+        // notice that color and name are both listed in the schema; NAF will only keep
+        // properties declared in the schema in sync.
+        schema: {
+          name: { type: 'string', default: 'user-' + Math.round(Math.random() * 10000) },
+          color: {
+            type: 'color', // btw: color is just a string under the hood in A-Frame
+            default: window.ntExample.randomColor()
+          }
+        },
+
+        init: function () {
+          this.head = this.el.querySelector('.head');
+          this.nametag = this.el.querySelector('.nametag');
+
+          this.ownedByLocalUser = this.el.id === 'player';
+          if (this.ownedByLocalUser) {
+            // populate the html overlay with the correct name on init
+            this.nametagInput = document.getElementById('username-overlay');
+            this.nametagInput.value = this.data.name;
+
+            // add the initial color to the html overlay color picker button
+            document.querySelector('button').style.backgroundColor = this.data.color;
+            document.querySelector('button').style.color = this.data.color;
+          }
+        },
+
+        // here as an example, not used in current demo. Could build a user list, expanding on this.
+        listUsers: function () {
+          console.log(
+            'userlist',
+            [...document.querySelectorAll('[player-info]')].map((el) => el.components['player-info'].data.name)
+          );
+        },
+
+        newRandomColor: function () {
+          this.el.setAttribute('player-info', 'color', window.ntExample.randomColor());
+        },
+
+        update: function () {
+          if (this.head) this.head.setAttribute('material', 'color', this.data.color);
+          if (this.nametag) this.nametag.setAttribute('value', this.data.name);
+        }
+      });
+
+      
+  const btn = document.querySelector("#chatButton");      // SEND btn
+        const input = document.querySelector("#chatInput");     // input field with the text
+        const log = document.querySelector("#messages")    // message logchatInput
+
+  // chat box 
+  function addMsg() {
+            // log your own messages
+            messages.innerHTML += NAF.clientId + ": " + input.value + '<br>'
+            // broadcast the text as some unique dataType (like "chat")
+            NAF.connection.broadcastData("chat", { txt: input.value })
+            // when a "chat" type message arrives
+            NAF.connection.subscribeToDataChannel("chat", (senderId, dataType, data, targetId) => {
+                // append the data.txt to the message log
+                // messages.innerHTML += senderId + ": " + data.txt + '<br>'
+                messages.innerHTML += username + ": " + data.txt + '<br>'
+            })
+            txt: input.value = '';
+            messages.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addMsg();
+            }
+        });
+        // when you want to send a message
+        btn.addEventListener("click", evt => {
+            addMsg();
+        });
+    </script>
+  </head>
+
+  <body>
+    <!-- This <button> and <input> will overlay on top of the A-Frame canvas--this style is all you need.
+         Note the onclick and oninput attributes; on every call, they will run .setAttribute() for the player-info
+         component's data. NAF will keep that property in sync, since 'name' and 'color' are declared in the schema
+         of the 'player-info' component
+    -->
+    <button
+      id="color-changer"
+      style="z-index: 100; bottom: 24px; left: 24px; position: fixed"
+      onclick="let newColor = window.ntExample.randomColor();
+             document.getElementById('player').setAttribute('player-info', 'color', newColor); 
+             document.querySelector('button').style.backgroundColor = newColor;
+             document.querySelector('button').style.color = newColor;
+    "
+    >
+      ■
+    </button>
+    <input
+      id="username-overlay"
+      style="z-index: 100; bottom: 24px; left: 48px; position: fixed"
+      oninput="document.getElementById('player').setAttribute('player-info', 'name', this.value)"
+    />
+    <div id="chatSubmit">
+    <input type="text" id="chatInput">
+    <button id="chatButton">Send</button>
+    </div>
+    <!-- chat Window UI -->
+    <div id="chatUI">
+    <h4>Chat</h4>
+    <div id="messages"></div>
+    </div>
+    
+
+    <a-scene
+      networked-scene="
+        room: chatroom3;
+        debug: true;
+    "
+    >
+      <a-assets>
+        <template id="rig-template">
+          <a-entity></a-entity>
+        </template>
+
+        <template id="head-template">
+          <a-entity class="avatar" player-info>
+            <a-sphere class="head" scale="0.2 0.22 0.2"></a-sphere>
+            <a-entity class="face" position="0 0.05 0">
+              <a-sphere class="eye" color="white" position="0.06 0.05 -0.16" scale="0.04 0.04 0.04">
+                <a-sphere class="pupil" color="black" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+              </a-sphere>
+              <a-sphere class="eye" color="white" position="-0.06 0.05 -0.16" scale="0.04 0.04 0.04">
+                <a-sphere class="pupil" color="black" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+              </a-sphere>
+            </a-entity>
+
+            <!-- here we add a text component for a nametag; the value will be updated by the player-info component -->
+            <a-text
+              class="nametag"
+              value="?"
+              rotation="0 180 0"
+              position=".25 -.35 0"
+              side="double"
+              scale=".5 .5 .5"
+            ></a-text>
+          </a-entity>
+        </template>
+      </a-assets>
+
+      <a-entity environment="preset: threetowers; groundColor: black;groundYScale:40; seed:35;
+      shadow:true;
+      dressingUniformScale:false;
+      dressing:pyramids;
+      dressingColor:#FFD700;
+       ground:canyon;
+       groundYScale: 15;
+       playArea:1;
+       groundColor: #8b0000;
+       skyType: gradient;
+       horizonColor: #FF0000;
+       dressingAmount:2;
+       dressingVariance:1,1,1;">
+    </a-entity>
+      <a-entity light="type:ambient;intensity:0.5"></a-entity>
+
+      <a-entity id="rig" movement-controls="fly:true;" spawn-in-circle="radius:3" networked="template:#rig-template;">
+        <a-entity
+          id="player"
+          camera
+          position="0 1.6 0"
+          look-controls
+          networked="template:#head-template;"
+          visible="false"
+        ></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>

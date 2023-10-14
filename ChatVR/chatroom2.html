@@ -87,7 +87,7 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
       look-controls
       networked="template:#avatar-template;"
       visible="false"
-      nametag='text:user;'
+      player-info
     >
     </a-entity>
   </a-entity>
@@ -239,7 +239,8 @@ oninput="document.getElementById('player').setAttribute('player-info', 'name', t
             // when a "chat" type message arrives
             NAF.connection.subscribeToDataChannel("chat", (senderId, dataType, data, targetId) => {
                 // append the data.txt to the message log
-                messages.innerHTML += senderId + ": " + data.txt + '<br>'
+                // messages.innerHTML += senderId + ": " + data.txt + '<br>'
+                messages.innerHTML += username + ": " + data.txt + '<br>'
             })
             txt: input.value = '';
             messages.scrollIntoView({ behavior: 'smooth', block: 'end' });
