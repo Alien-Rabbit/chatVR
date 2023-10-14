@@ -55,6 +55,9 @@ io.on("connection", socket => {
     socket.join(room);
 
     socket.emit("connectSuccess", { joinedTime });
+
+    // add multicmam here?
+
     const occupants = rooms[room].occupants;
     //experimental to see if can return count of total connected
     io.in(curRoom).emit("occupantsChanged", { occupants });
